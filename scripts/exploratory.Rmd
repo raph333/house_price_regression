@@ -9,15 +9,18 @@ require(ggplot2)
 require(tidyr)
 
 train <- read.csv('../data/train.csv')
+test <- read.csv('../data/test.csv')
+
 
 cat('dimensions: ', dim(train))
 head(train)
 ```
 
 ```{r, fig.height=10}
-fraction_available <- sapply(train, function(col) 1 - mean(is.na(col)))
+fraction_available <- sapply(test, function(col) 1 - mean(is.na(col)))
 available_values <- data.frame(fraction_available)
 available_values['variable'] <- row.names(available_values)
+row.names(available_values) <- NULL
 available_values['complete'] <- as.factor(available_values$fraction_available == 1)
 
 ggplot(available_values, aes(x=variable, y=fraction_available, fill=complete) ) + 
@@ -27,6 +30,61 @@ ggplot(available_values, aes(x=variable, y=fraction_available, fill=complete) ) 
   ggtitle('fraction of available (not NA) values') + 
   theme(plot.title=element_text(size=16, hjust=0.5))
 ```
+## feature analysis (and some engineering)
+
+Check datatype of features. All features are either factor or numeric (has been checked). Some features with datatype 'numeric' may in reality be ordinal and it makes more sense to encode them as factor. If a feature has datatype numeric but only a few distinct values, that's a sign that it should maybe be used as a factor.
+```{r}
+dtypes <- data.frame(variable=colnames(test),
+                     numeric=as.integer(sapply(test, is.numeric) ),
+                     factor=as.integer(sapply(test, is.factor) ),
+                     unique_values=sapply(test, function(x) length(unique(x)) ),
+                     missing_values=sapply(test, function(x) mean(is.na(x)) )
+)
+
+# check for numeric columns that maybe should be factors:
+filter(dtypes, numeric == T & unique_values <= 10)
+```
+```{r}
+feature_engineer <- function(df) {
+  # * make some new features and remove the old ones
+  # * change some ordinal features from numeric to factor
+  
+  # most houses have no pool (area = 0) => only consider if a house has a pool or not:
+  df['HasPool'] <- as.factor(df$PoolArea > 0)
+  df$PoolArea <- NULL
+  
+  convert_to_factor <- c('BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath', 'BedroomAbvGr',
+                         'KitchenAbvGr', 'Fireplaces', 'GarageCars')
+  df[, convert_to_factor] <- lapply(df[, convert_to_factor], as.factor)
+  
+  current_year <- 2011  # year the dataset was built
+  
+  df['Age'] <- current_year - df$YearBuilt
+  df['YearsSinceSale'] <- current_year - df$YrSold
+  df[, c('MoSold', 'YrSold', 'YearBuilt')] <- NULL
+  
+  return(df)
+}
+
+train <- feature_engineer(train)
+test <- feature_engineer(test)
+```
+
+Possible improvement: For all features which are mostly 0 but may have a numeric value, make a factor indiciating if it's there (i.e. not 0). For instance: EnclosedPorch. Most houses don't have it and for the rest, the feature provides an area.
+
+## Missing value imputation
+in progress...
+```{r}
+# variables with only a few missing values:
+impute_cols <- filter(available_values, fraction_available >= 0.9 & complete == F)$variable
+
+factor_cols <- Filter(function(x) is.factor(test[[x]]), impute_cols)
+test[, factor_cols] <- lapply(test[, factor_cols], addNA)  # add NA as a factor level
+
+numeric_cols <- Filter(function(col) is.numeric(test[[col]]), impute_cols)
+test[, numeric_cols] <- lapply(test[, numeric_cols], function(col) replace_na(col, median(col, na.rm=T)))
+```
+
 
 ## Split training set in to validation-set and training set
 
@@ -55,7 +113,6 @@ summary(naive_model)
 
 ## ignore test set for now
 ```{r, echo=F, eval=F}
-# test <- read.csv('../data/test.csv')
 # test_complete <- test[, colSums(is.na(test)) == 0]  # remove all columns with NAs
 # 
 # # use all variables that are complete in the test set + the target variable (price)
