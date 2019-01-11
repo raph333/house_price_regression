@@ -1,0 +1,45 @@
+---
+title: "Standardisierte Koeffizienten"
+output: html_document
+---
+
+## Identifizieren der Variablen mit den größten Effekten mit Hilfe von standardisierten Koeffizienten 
+
+## Nachteil unstandardisierter Regressionskoeffizienten: 
+Der Regressionskoeffizient gibt an, um wie viele Einheiten sich Y im Durchschnitt ändert, wenn X sich um eine absolute Einheit ändert. Deshalb ist der Regressionskoeffizient selbst von den Maßeinheiten von X und Y abhängig. 
+
+## Ausweg: Standardisierte Koeffizienten (sog. "Beta-Koeffizienten")  
+
+$\hat{\beta_i} = \beta_i*\frac{s_{x_i}}{s_y}$
+
+$\beta_i$ = unstandardisierter Regressionkoeffizient
+
+$s_{x_i}$ = Standardabweichung der unabhängigen Varibalbe $X_i$
+
+$s_y$ = Standardabweichung der abhängigen Variable Y
+
+Vorteil: $\hat{\beta_i}$ liegt (unabhängig von den ursprünglichen Maßeinheiten) immer im Intervall [-1,1] und kann daher sowohl der Richtung als auch der Stärke nach eindeutig interpretiert werden. 
+
+Nachteil: Eignet sich nicht für Dummyvariablen oder für den Vergleich verschiedener Stichproben
+
+```{r}
+summary(naive_model)
+summary(train_processed)
+
+```
+
+```{r}
+stand_model <- lm(data=train_processed, scale(SalePrice) ~ 0 + scale(LotArea) + scale(YearRemodAdd) + scale(YearsSinceSale) + scale(MasVnrArea) + scale(BsmtFinSF2) + scale(BsmtUnfSF) + scale(LowQualFinSF) + scale(GrLivArea) + scale(GarageArea) + scale(WoodDeckSF) + scale(OpenPorchSF) + scale(ScreenPorch) + scale(MiscVal) )
+
+summary(stand_model)
+```
+
+```{r}
+stand_model <- lm(data=train_processed, scale(SalePrice) ~ 0 + scale(LotArea) + scale(YearRemodAdd) + scale(YearsSinceSale) + scale(MasVnrArea) + scale(BsmtFinSF2) + scale(BsmtUnfSF) + scale(LowQualFinSF) + scale(GrLivArea) + scale(BsmtFullBath) + scale(BsmtHalfBath) + scale(FullBath) + scale(HalfBath) + scale(Bedroom) + scale(Kitchen) + scale(TotRmsAbvGrd) + scale(Fireplaces) + scale(GarageYrBlt) + scale(GarageCars) + scale(GarageArea) + scale(WoodDeckSF) + scale(OpenPorchSF) + scale(EnclosedPorch) + scale(ScreenPorch) + scale(PoolArea) + scale(MiscVal) + scale(MoSold) + scale(YrSold))
+
+summary(stand_model)
+```
+
+
+
+
