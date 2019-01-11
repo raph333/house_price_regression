@@ -11,10 +11,22 @@ require(tidyr)
 train <- read.csv('../data/train.csv')
 test <- read.csv('../data/test.csv')
 
-
 cat('dimensions: ', dim(train))
 head(train)
 ```
+
+```{r}
+available_test <- sapply(test, function(col) 1 - mean(is.na(col)))
+available_train <- sapply(select(train, -SalePrice), function(col) 1 - mean(is.na(col)))
+na_stats <- data.frame(available_test, available_train)
+na_stats['variable'] <- row.names(na_stats)
+row.names(na_stats) <- NULL
+na_stats <- na_stats %>%
+  mutate( available_min = pmin(available_train, available_test) ) %>% 
+  mutate( complete = as.factor(available_min == 1) )
+na_stats
+```
+
 
 ```{r, fig.height=10}
 fraction_available <- sapply(test, function(col) 1 - mean(is.na(col)))
@@ -27,7 +39,8 @@ ggplot(available_values, aes(x=variable, y=fraction_available, fill=complete) ) 
   geom_bar( stat='identity' ) + 
   coord_flip() + 
   scale_fill_manual(values=c('gray50', 'gray80')) +
-  ggtitle('fraction of available (not NA) values') + 
+  ylab('fraction of values available') +
+  ggtitle('Fraction of available (not NA) values') + 
   theme(plot.title=element_text(size=16, hjust=0.5))
 ```
 ## feature analysis (and some engineering)
@@ -76,13 +89,29 @@ Possible improvement: For all features which are mostly 0 but may have a numeric
 in progress...
 ```{r}
 # variables with only a few missing values:
-impute_cols <- filter(available_values, fraction_available >= 0.9 & complete == F)$variable
+impute_na <- function(df) {
+  
+  notna_threshold <- 0.9  # drop feature if less than 90% available values
+  impute_cols <- filter(available_values, fraction_available >= notna_threshold & complete == F)$variable
 
-factor_cols <- Filter(function(x) is.factor(test[[x]]), impute_cols)
-test[, factor_cols] <- lapply(test[, factor_cols], addNA)  # add NA as a factor level
+  factor_cols <- Filter(function(x) is.factor(df[[x]]), impute_cols)
+  df[, factor_cols] <- lapply(df[, factor_cols], addNA)  # add NA as a factor level
+  cat('\n\nset NA to factor-level for these columns:\n', factor_cols)
+  
+  numeric_cols <- Filter(function(col) is.numeric(df[[col]]), impute_cols)
+  df[, numeric_cols] <- lapply(df[, numeric_cols], function(col) replace_na(col, median(col, na.rm=T)))
+  cat('\n\nset NA to median value for these columns:\n', numeric_cols)
 
-numeric_cols <- Filter(function(col) is.numeric(test[[col]]), impute_cols)
-test[, numeric_cols] <- lapply(test[, numeric_cols], function(col) replace_na(col, median(col, na.rm=T)))
+  remove_cols <- filter(available_values, fraction_available < notna_threshold)$variable
+  df <- select(df, -remove_cols)
+  cat('\n\nremoved these columns (too many NA-values):\n', remove_cols)
+  
+  return(df)
+}
+
+test_complete <- impute_na(test)
+
+
 ```
 
 
