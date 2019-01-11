@@ -34,7 +34,7 @@ X <- train %>%
 ```
 
 ```{r}
-lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
+lambdas_to_try <- 10^seq(2, 8, length.out = 100)
 # Setting alpha = 0 implements ridge regression
 ridge_cv <- cv.glmnet(X, y, alpha = 0, lambda = lambdas_to_try,
                       standardize = TRUE, nfolds = 10)
