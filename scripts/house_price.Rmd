@@ -1,0 +1,88 @@
+---
+title: "House price prediction"
+output: html_document
+---
+
+```{r, message=F, comment=NA}
+require(dplyr)
+require(ggplot2)
+require(tidyr)
+
+train <- read.csv('../data/train.csv')
+test <- read.csv('../data/test.csv')
+
+cat('dimensions: ', dim(train))
+head(train)
+```
+
+note: this looks different for the training-set
+```{r}
+fraction_available <- sapply(test, function(col) 1 - mean(is.na(col)))
+available_values <- data.frame(fraction_available)
+available_values['variable'] <- row.names(available_values)
+row.names(available_values) <- NULL
+available_values['complete'] <- as.factor(available_values$fraction_available == 1)
+
+ggplot(available_values, aes(x=variable, y=fraction_available, fill=complete) ) + 
+  geom_bar( stat='identity' ) + 
+  coord_flip() + 
+  scale_fill_manual(values=c('gray50', 'gray80')) +
+  ylab('fraction of values available') +
+  ggtitle('Fraction of available (not NA) values') + 
+  theme(plot.title=element_text(size=16, hjust=0.5))
+```
+
+
+## pre-process
+
+We have to make sure that a feature is complete in both, training- and test-set. Otherwise it's of no use. Therefore, the fraction of available values (not NA values) is calculated for both. And used as information for the function 'impute_na' from 'pre_process.R'
+
+```{r}
+source('pre_process.R')
+
+na_statsistics <- get_na_stats(train_df=train, test_df=test)
+na_statsistics
+```
+
+If the fraction of NA-values exceeds 10% in either training- or test-set, the feature is dropped for now. If a fraction of less than 10% is NA, the NA-values are imputed. For factors, a new factor level 'NA' is made. This just means that 'unknown' becomes it's own dummy variable. For numerical values, the NA-values are replaced with the median of the feature.
+
+```{r}
+test_processed <- test %>% impute_na(na_stats=na_statsistics) %>%  feature_engineer()
+train_processed <- train %>% impute_na(na_stats=na_statsistics) %>%  feature_engineer()
+```
+
+**Feature engineering:**
+All features are either factor or numeric (has been checked). Some features with datatype 'numeric' are ordinal and it makes more sense to encode them as factor. If a feature has datatype numeric but only a few distinct values, that's a sign that it should maybe be used as a factor.
+
+
+The test-set has no target-variable. It can be used for evaluation on kaggle but here in R we cannot evaluate the predictions on this test-set.
+
+Therefore, we split the training-set in a 'real' training-set to build the models and a validation-set to test the models. Finally, the best model will be evaluated on the test-set .
+```{r}
+split_data <- split_training_validation_ds(train_processed, validation_fraction=0.2)
+train <- split_data[[1]]
+val <- split_data[[2]]
+```
+
+
+## Start modelling
+
+```{r}
+naive_model <- lm(data=train_processed, SalePrice ~ . )
+
+val['prediction'] <- predict(naive_model, newdata=val)
+val['residual'] <- abs(val$SalePrice - val$prediction)
+val
+```
+
+```{r}
+mad <- mean(val$residual)  # mean absolute eviation
+cat(sprintf('MAD: %s\nmean sale-price: %s', round(mean(val$residual)), round(mean(val$SalePrice))))
+```
+
+```{r}
+ggplot(val, aes(x=SalePrice, y=prediction) ) +
+  geom_point()
+```
+
+
