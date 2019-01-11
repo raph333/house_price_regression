@@ -1,0 +1,54 @@
+---
+title: "RidgeRegression"
+author: "Philipp Grafendorfer"
+date: "11 Januar 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+train <- readRDS(file = "data/train_preprocessed.rds")
+validation <- readRDS(file = "data/validation_preprocessed.rds")
+```
+
+```{r}
+set.seed(42)
+library(glmnet)
+library(psych)
+library(dplyr)
+library(purrr)
+```
+
+```{r}
+y <- train %>% 
+  select(SalePrice) %>% 
+  scale(center = TRUE, scale = FALSE) %>% 
+  as.matrix()
+X <- train %>% 
+  dplyr::select_if(is.integer) %>% 
+  select(-SalePrice) %>% 
+  as.matrix()
+```
+
+```{r}
+lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
+# Setting alpha = 0 implements ridge regression
+ridge_cv <- cv.glmnet(X, y, alpha = 0, lambda = lambdas_to_try,
+                      standardize = TRUE, nfolds = 10)
+# Plot cross-validation results
+plot(ridge_cv)
+```
+
+```{r}
+# Best cross-validated lambda
+lambda_cv <- ridge_cv$lambda.min
+# Fit final model, get its sum of squared residuals and multiple R-squared
+model_cv <- glmnet(X, y, alpha = 0, lambda = lambda_cv, standardize = TRUE)
+y_hat_cv <- predict(model_cv, X)
+ssr_cv <- t(y - y_hat_cv) %*% (y - y_hat_cv)
+rsq_ridge_cv <- cor(y, y_hat_cv)^2
+```
+
