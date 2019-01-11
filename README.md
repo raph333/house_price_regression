@@ -8,7 +8,7 @@ To do (some points may be added or removed):
 
 1. Read the link above to get an idea about the data-set
 2. Check for missing values, impute variables with just a few missing values (disregard the rest) **(done)**
-3. Check for mulitcolinearity e.g. using the VIF
+3. Check for mulitcolinearity e.g. using the VIF or Ridge Regression; there the coefficients of collinear parameters are similar **(almost done)**
 4. Have an idea of how many continuous and categorical variables there are and convert if appropriate **(done)**
 5. Make a naive model (just use all variables without missing values)
 6. Make a more sophisticated model: include imputed variables, remove variables with high multicolinearity (to make the model interpretable)
