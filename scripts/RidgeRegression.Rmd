@@ -1,0 +1,103 @@
+---
+title: "RidgeRegression"
+author: "Philipp Grafendorfer"
+date: "11 Januar 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# train <- readRDS(file = "data/train_preprocessed.rds")
+# validation <- readRDS(file = "data/validation_preprocessed.rds")
+train <- read.csv('../data/train.csv')
+test <- read.csv('../data/test.csv')
+```
+
+```{r}
+source('pre_process.R')
+na_statsistics <- get_na_stats(train_df=train, test_df=test)
+train_processed <- train %>% 
+  impute_na(na_stats=na_statsistics) %>%  
+  feature_engineer()
+split_data <- split_training_validation_ds(train_processed, validation_fraction=0.2)
+train <- split_data[[1]]
+val <- split_data[[2]]
+```
+
+
+```{r}
+set.seed(42)
+library(glmnet)
+library(psych)
+library(dplyr)
+library(purrr)
+library(data.table)
+```
+
+```{r}
+df_train <- data.table(train, keep.rownames = F)
+sparse_matrix_train <- sparse.model.matrix(SalePrice ~ . -1 , data = df_train)
+
+process_output_data <- function(data_table){
+  output_vector_train <- data_table[,SalePrice]
+  output_vector_train <- output_vector_train %>% 
+    scale(center = TRUE, scale = FALSE) %>% 
+    as.matrix()
+  return(output_vector_train)
+}
+output_vector_train <- process_output_data(df_train)
+```
+
+
+```{r}
+lambdas_to_try <- 10^seq(2, 8, length.out = 100)
+# Setting alpha = 0 implements ridge regression
+ridge_cv <- cv.glmnet(sparse_matrix_train, output_vector_train, alpha = 0, lambda = lambdas_to_try, standardize = TRUE, nfolds = 10)
+# Plot cross-validation results
+plot(ridge_cv)
+```
+
+```{r}
+# Best cross-validated lambda
+lambda_cv <- ridge_cv$lambda.min
+# Fit final model, get its sum of squared residuals and multiple R-squared
+model_cv <- glmnet(sparse_matrix_train, output_vector_train, alpha = 0, lambda = lambda_cv, standardize = TRUE)
+y_hat_cv <- predict(model_cv, sparse_matrix_train)
+ssr_cv <- t(output_vector_train - y_hat_cv) %*% (output_vector_train - y_hat_cv)
+rsq_ridge_cv <- cor(output_vector_train, y_hat_cv)^2
+```
+
+```{r}
+tmp_coeffs <- coef(model_cv, s = "lambda.min")
+df_coeff <- data.frame(name = tmp_coeffs@Dimnames[[1]][tmp_coeffs@i + 1]
+                       ,coefficient = tmp_coeffs@x) %>% 
+  arrange(coefficient)
+```
+
+```{r}
+plot(df_coeff)
+```
+
+```{r}
+boxplot(df_coeff$coefficient, horizontal = T)
+```
+
+```{r}
+df_val <- data.table(val, keep.rownames = F)
+sparse_matrix_val <- sparse.model.matrix(SalePrice ~ . -1 , data = df_val)
+
+output_vector_val <- process_output_data(df_val)
+```
+
+```{r}
+prediction <- predict(model_cv, sparse_matrix_val)
+mad <- mean(abs(prediction - output_vector_val))
+print(mad)
+```
+
+
+
+
