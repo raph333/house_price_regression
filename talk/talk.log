@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.30)  12 JAN 2019 15:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.30)  12 JAN 2019 15:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1552,9 +1552,41 @@ LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <4> not available
 
 [3
 
-] [4
+] <figures/na_stats.pdf, id=44, 1168.365pt x 721.69624pt>
+File: figures/na_stats.pdf Graphic file (type pdf)
 
-] [5
+<use figures/na_stats.pdf>
+Package pdftex.def Info: figures/na_stats.pdf used on input line 64.
+(pdftex.def)             Requested size: 307.28987pt x 189.806pt.
+ [4
+
+ <./figures/na_stats.pdf>]
+LaTeX Font Info:    Try loading font information for OMS+cmss on input line 75.
+
+LaTeX Font Info:    No file OMScmss.fd. on input line 75.
+
+
+LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
+(Font)              using `OMS/cmsy/m/n' instead
+(Font)              for symbol `textbullet' on input line 75.
+
+[5
+
+] [6
+
+] [7
+
+] [8
+
+] <figures/simple_model.pdf, id=79, 526.96875pt x 325.215pt>
+File: figures/simple_model.pdf Graphic file (type pdf)
+
+<use figures/simple_model.pdf>
+Package pdftex.def Info: figures/simple_model.pdf used on input line 102.
+(pdftex.def)             Requested size: 307.28987pt x 189.65204pt.
+ [9
+
+ <./figures/simple_model.pdf>] [10
 
 ]
 \tf@nav=\write6
@@ -1566,38 +1598,44 @@ LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <4> not available
 \tf@snm=\write8
 \openout8 = `talk.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 74.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 74.
- (./talk.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 74.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 74.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 113.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 113.
+
+(./talk.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 113.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 113.
 Package rerunfilecheck Info: File `talk.out' has not changed.
-(rerunfilecheck)             Checksum: C8B8FD76052A3C00D3D1C13032CCEEA1;40.
+(rerunfilecheck)             Checksum: 709A4AACDD59DF6ED58A21CC305861C5;82.
 
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 74.
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 113.
  ) 
 Here is how much of TeX's memory you used:
- 30753 strings out of 494497
- 735637 string characters out of 6172399
+ 30829 strings out of 494497
+ 737060 string characters out of 6172399
  928074 words of memory out of 5000000
- 33485 multiletter control sequences out of 15000+600000
+ 33544 multiletter control sequences out of 15000+600000
  8815 words of font info for 33 fonts, out of 8000000 for 9000
  264 hyphenation exceptions out of 8191
  71i,11n,87p,1726b,695s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss17.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texli
-ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
-Output written on talk.pdf (5 pages, 56182 bytes).
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss17.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmtt8.pfb>
+Output written on talk.pdf (10 pages, 94016 bytes).
 PDF statistics:
- 76 PDF objects out of 1000 (max. 8388607)
- 56 compressed objects within 1 object stream
- 12 named destinations out of 1000 (max. 500000)
- 51 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 131 PDF objects out of 1000 (max. 8388607)
+ 100 compressed objects within 1 object stream
+ 23 named destinations out of 1000 (max. 500000)
+ 69 words of extra memory for PDF output out of 10000 (max. 10000000)
 

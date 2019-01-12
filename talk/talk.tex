@@ -55,11 +55,50 @@
 \end{frame}
 
 
-\begin{frame}{...}
+\begin{frame}{Fehlende Werte: Übersicht}
 	
 	\begin{figure}
-		%\includegraphics[width=\textwidth, keepaspectratio]{figures/file_name}
+		\includegraphics[width=\textwidth, keepaspectratio]{figures/na_stats}
 	\end{figure}
+	
+\end{frame}
+
+\begin{frame}{Fehlende Werte: Strategie}
+	
+	\begin{Large}{Umgang mit fehlenden Werten:}\end{Large}
+	\begin{itemize}
+		\item Bei mehr als 10\% Fehlenden Werten: Variable verworfen
+		\item Bei numerischen Variablen: NA durch Median der Variable ersetzt
+		\item Bei kategorischen Variablen: NA als eigene Kategorie (Kategorie 'unbekannt')
+	\end{itemize}
+	
+\end{frame}
+
+
+\begin{frame}{...}
+	
+
+\end{frame}
+
+\section{Modelle}
+
+\begin{frame}{Einfaches Model}
+	
+	\begin{Large}{Eckdaten}\end{Large}
+	\begin{itemize}
+		\item 73 erklärende Variablen
+		\item keine manuelle Auswahl der Variablen
+		\item Mean absolute deviation: $\approx 15 000 \$$
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}{Einfaches Model}
+	
+	\begin{figure}
+		\includegraphics[width=\textwidth, keepaspectratio]{figures/simple_model}
+	\end{figure}
+	
 \end{frame}
 
 
