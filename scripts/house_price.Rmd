@@ -7,6 +7,8 @@ output: html_document
 require(dplyr)
 require(ggplot2)
 require(tidyr)
+require(scales)
+require(caret)
 
 train <- read.csv('../data/train.csv')
 test <- read.csv('../data/test.csv')
@@ -41,15 +43,11 @@ We have to make sure that a feature is complete in both, training- and test-set.
 source('pre_process.R')
 
 na_statsistics <- get_na_stats(train_df=train, test_df=test)
-na_statsistics
+head(na_statsistics)
 ```
 
 If the fraction of NA-values exceeds 10% in either training- or test-set, the feature is dropped for now. If a fraction of less than 10% is NA, the NA-values are imputed. For factors, a new factor level 'NA' is made. This just means that 'unknown' becomes it's own dummy variable. For numerical values, the NA-values are replaced with the median of the feature.
 
-```{r}
-test_processed <- test %>% impute_na(na_stats=na_statsistics) %>%  feature_engineer()
-train_processed <- train %>% impute_na(na_stats=na_statsistics) %>%  feature_engineer()
-```
 
 **Feature engineering:**
 All features are either factor or numeric (has been checked). Some features with datatype 'numeric' are ordinal and it makes more sense to encode them as factor. If a feature has datatype numeric but only a few distinct values, that's a sign that it should maybe be used as a factor.
@@ -57,22 +55,50 @@ All features are either factor or numeric (has been checked). Some features with
 
 The test-set has no target-variable. It can be used for evaluation on kaggle but here in R we cannot evaluate the predictions on this test-set.
 
-Therefore, we split the training-set in a 'real' training-set to build the models and a validation-set to test the models. Finally, the best model will be evaluated on the test-set .
+Therefore, we split the training-set in a 'real' training-set to build the models and a validation-set to test the models. Finally, the best model will be evaluated on the test-set.
+
+**Note**:
+Fixed bug: previously, the model was trained on the whole labelled dataset (train.csv) and evaluated on the validation set which is a part of this dataset. That's why the problem with rare factor levels did not occur (see function 'remove_rare_factor_levles' in 'pre_process.R').
+
+
+## Modelling
+
+just remove all columns with NAs in either training or test-set and build a model using all features.
+```{r, echo=F, eval=F}
+no_na <- read.csv('../data/train.csv') %>%
+  feature_engineer() %>%
+  remove_na_columns(na_stats=na_statsistics) %>%  # remove all columns containg NAs
+  remove_rare_factor_levels()
+
+split_data_no_na <- split_training_validation_ds(no_na, validation_fraction=0.2)
+train_no_na <- split_data_no_na[[1]]
+val_no_na <- split_data_no_na[[2]]
+
+extremely_naive_model <- lm(data=train_no_na, SalePrice ~ .)
+val_no_na['prediction'] <- predict(extremely_naive_model, newdata=val_no_na)
+val_no_na['residual'] <- abs(val_no_na$SalePrice - val_no_na$prediction)
+
+mad <- mean(val_no_na$residual)  # mean absolute eviation
+cat(sprintf('MAD: %s\nmean sale-price: %s', round(mean(val_no_na$residual)), round(mean(val_no_na$SalePrice))))
+```
+...warning maybe because of multicolinearity
+
+
 ```{r}
+train_processed <- pre_process_data(train)  # here columns with only a few NAs are imputed (not thrown away)
+
 split_data <- split_training_validation_ds(train_processed, validation_fraction=0.2)
 train <- split_data[[1]]
 val <- split_data[[2]]
 ```
 
-
-## Start modelling
-
+use somewhat pre-processed data (features with more than 10% NA removed, featrues with very few NAs imputed, some feature engineering). Then build a model using all features.
 ```{r}
-naive_model <- lm(data=train_processed, SalePrice ~ . )
+naive_model <- lm(data=train, SalePrice ~ . )
 
 val['prediction'] <- predict(naive_model, newdata=val)
 val['residual'] <- abs(val$SalePrice - val$prediction)
-val
+val %>% select(SalePrice, prediction) %>% head()
 ```
 
 ```{r}
@@ -82,16 +108,23 @@ cat(sprintf('MAD: %s\nmean sale-price: %s', round(mean(val$residual)), round(mea
 
 ```{r}
 ggplot(val, aes(x=SalePrice, y=prediction) ) +
-  geom_point()
+  geom_point() +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma) +
+  ylab('Vorhersage [$]') +
+  xlab('Verkaufspreis [$]') +
+  ggtitle('Modell-Vorhersage und Verkaufspreis') + 
+  theme(plot.title=element_text(size=16, hjust=0.5))
+ggsave('../talk/figures/simple_model.pdf')
 ```
 
 ============================================================================================================================================
 
 
-## Identifizieren der Variablen mit den größten Effekten mit Hilfe von standardisierten Koeffizienten 
+## Identifizieren der Variablen mit den gr??ten Effekten mit Hilfe von standardisierten Koeffizienten 
 
 ## Nachteil unstandardisierter Regressionskoeffizienten: 
-Der Regressionskoeffizient gibt an, um wie viele Einheiten sich Y im Durchschnitt ändert, wenn X sich um eine absolute Einheit ändert. Deshalb ist der Regressionskoeffizient selbst von den Maßeinheiten von X und Y abhängig. 
+Der Regressionskoeffizient gibt an, um wie viele Einheiten sich Y im Durchschnitt ?ndert, wenn X sich um eine absolute Einheit ?ndert. Deshalb ist der Regressionskoeffizient selbst von den Ma?einheiten von X und Y abh?ngig. 
 
 ## Ausweg: Standardisierte Koeffizienten (sog. "Beta-Koeffizienten")  
 
@@ -99,13 +132,13 @@ $\hat{\beta_i} = \beta_i*\frac{s_{x_i}}{s_y}$
 
 $\beta_i$ = unstandardisierter Regressionkoeffizient
 
-$s_{x_i}$ = Standardabweichung der unabhängigen Varibalbe $X_i$
+$s_{x_i}$ = Standardabweichung der unabh?ngigen Varibalbe $X_i$
 
-$s_y$ = Standardabweichung der abhängigen Variable Y
+$s_y$ = Standardabweichung der abh?ngigen Variable Y
 
-Vorteil: $\hat{\beta_i}$ liegt (unabhängig von den ursprünglichen Maßeinheiten) immer im Intervall [-1,1] und kann daher sowohl der Richtung als auch der Stärke nach eindeutig interpretiert werden. 
+Vorteil: $\hat{\beta_i}$ liegt (unabh?ngig von den urspr?nglichen Ma?einheiten) immer im Intervall [-1,1] und kann daher sowohl der Richtung als auch der St?rke nach eindeutig interpretiert werden. 
 
-Nachteil: Eignet sich nicht für Dummyvariablen oder für den Vergleich verschiedener Stichproben
+Nachteil: Eignet sich nicht f?r Dummyvariablen oder f?r den Vergleich verschiedener Stichproben
 
 
 ```{r}

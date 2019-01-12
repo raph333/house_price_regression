@@ -35,13 +35,15 @@ available_values['variable'] <- row.names(available_values)
 row.names(available_values) <- NULL
 available_values['complete'] <- as.factor(available_values$fraction_available == 1)
 
-ggplot(available_values, aes(x=variable, y=fraction_available, fill=complete) ) + 
+ggplot(available_values, aes(x=variable, y=fraction_available*100, fill=complete) ) + 
   geom_bar( stat='identity' ) + 
   coord_flip() + 
   scale_fill_manual(values=c('gray50', 'gray80')) +
-  ylab('fraction of values available') +
-  ggtitle('Fraction of available (not NA) values') + 
-  theme(plot.title=element_text(size=16, hjust=0.5))
+  ylab('Prozent verfügbare Werte (nicht NA)') +
+  xlab('Variable') +
+  ggtitle('Fehlende Werte im Datensatz') + 
+  theme(plot.title=element_text(size=30, hjust=0.5))
+ggsave('../talk/figures/na_stats.pdf', bg = 'transparent')
 ```
 ## feature analysis (and some engineering)
 
