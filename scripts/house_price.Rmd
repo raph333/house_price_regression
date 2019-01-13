@@ -142,8 +142,10 @@ Nachteil: Eignet sich nur für Variablen, bei denen die Standardabweichung sinnvo
 
 
 ```{r}
+
 stand_model <- lm(data=train_processed, scale(SalePrice) ~ 0 + scale(LotArea) + scale(YearRemodAdd) + scale(MasVnrArea) + scale(X1stFlrSF) + scale(X2ndFlrSF) + scale(GarageArea) + scale(WoodDeckSF) + scale(ScreenPorch) + scale(OverallQual))
 
 summary(stand_model)
-```
 
+
+```
