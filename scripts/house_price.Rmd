@@ -121,10 +121,10 @@ ggsave('../talk/figures/simple_model.pdf')
 ============================================================================================================================================
 
 
-## Identifizieren der Variablen mit den gr??ten Effekten mit Hilfe von standardisierten Koeffizienten 
+## Identifizieren der Variablen mit den größten Effekten mit Hilfe von standardisierten Koeffizienten 
 
 ## Nachteil unstandardisierter Regressionskoeffizienten: 
-Der Regressionskoeffizient gibt an, um wie viele Einheiten sich Y im Durchschnitt ?ndert, wenn X sich um eine absolute Einheit ?ndert. Deshalb ist der Regressionskoeffizient selbst von den Ma?einheiten von X und Y abh?ngig. 
+Der Regressionskoeffizient gibt an, um wie viele Einheiten sich Y im Durchschnitt ?ndert, wenn X sich um eine absolute Einheit ?ndert. Deshalb ist der Regressionskoeffizient selbst von den Ma?einheiten von X und Y abh?ngig und daher schlechter vergleichbar.
 
 ## Ausweg: Standardisierte Koeffizienten (sog. "Beta-Koeffizienten")  
 
@@ -136,15 +136,14 @@ $s_{x_i}$ = Standardabweichung der unabh?ngigen Varibalbe $X_i$
 
 $s_y$ = Standardabweichung der abh?ngigen Variable Y
 
-Vorteil: $\hat{\beta_i}$ liegt (unabh?ngig von den urspr?nglichen Ma?einheiten) immer im Intervall [-1,1] und kann daher sowohl der Richtung als auch der St?rke nach eindeutig interpretiert werden. 
+Vorteil: $\hat{\beta_i}$ liegt idealerweise im Intervall [-1,1] (sonst Hinweis auf Mulitkollinearität) und kann daher sowohl der Richtung als auch der Stärke nach eindeutig interpretiert werden. 
 
-Nachteil: Eignet sich nicht f?r Dummyvariablen oder f?r den Vergleich verschiedener Stichproben
+Nachteil: Eignet sich nur für Variablen, bei denen die Standardabweichung sinnvoll interpretiert werden kann und nicht für den Vergleich verschiedener Stichproben
 
 
 ```{r}
-stand_model <- lm(data=train_processed, scale(SalePrice) ~ 0 + scale(LotArea) + scale(YearRemodAdd) + scale(YearsSinceSale) + scale(MasVnrArea) + scale(BsmtFinSF2) + scale(BsmtUnfSF) + scale(LowQualFinSF) + scale(GrLivArea) + scale(GarageArea) + scale(WoodDeckSF) + scale(OpenPorchSF) + scale(ScreenPorch) + scale(MiscVal) )
+stand_model <- lm(data=train_processed, scale(SalePrice) ~ 0 + scale(LotArea) + scale(YearRemodAdd) + scale(MasVnrArea) + scale(X1stFlrSF) + scale(X2ndFlrSF) + scale(GarageArea) + scale(WoodDeckSF) + scale(ScreenPorch) + scale(OverallQual))
 
 summary(stand_model)
 ```
-
 

@@ -3,10 +3,11 @@ title: "Standardisierte Koeffizienten"
 output: html_document
 ---
 
+
 ## Identifizieren der Variablen mit den größten Effekten mit Hilfe von standardisierten Koeffizienten 
 
 ## Nachteil unstandardisierter Regressionskoeffizienten: 
-Der Regressionskoeffizient gibt an, um wie viele Einheiten sich Y im Durchschnitt ändert, wenn X sich um eine absolute Einheit ändert. Deshalb ist der Regressionskoeffizient selbst von den Maßeinheiten von X und Y abhängig. 
+Der Regressionskoeffizient gibt an, um wie viele Einheiten sich Y im Durchschnitt ?ndert, wenn X sich um eine absolute Einheit ?ndert. Deshalb ist der Regressionskoeffizient selbst von den Ma?einheiten von X und Y abh?ngig und daher schlechter vergleichbar.
 
 ## Ausweg: Standardisierte Koeffizienten (sog. "Beta-Koeffizienten")  
 
@@ -14,13 +15,13 @@ $\hat{\beta_i} = \beta_i*\frac{s_{x_i}}{s_y}$
 
 $\beta_i$ = unstandardisierter Regressionkoeffizient
 
-$s_{x_i}$ = Standardabweichung der unabhängigen Varibalbe $X_i$
+$s_{x_i}$ = Standardabweichung der unabh?ngigen Varibalbe $X_i$
 
-$s_y$ = Standardabweichung der abhängigen Variable Y
+$s_y$ = Standardabweichung der abh?ngigen Variable Y
 
-Vorteil: $\hat{\beta_i}$ liegt (unabhängig von den ursprünglichen Maßeinheiten) immer im Intervall [-1,1] und kann daher sowohl der Richtung als auch der Stärke nach eindeutig interpretiert werden. 
+Vorteil: $\hat{\beta_i}$ liegt idealerweise im Intervall [-1,1] (sonst Hinweis auf Mulitkollinearität) und kann daher sowohl der Richtung als auch der Stärke nach eindeutig interpretiert werden. 
 
-Nachteil: Eignet sich nicht für Dummyvariablen oder für den Vergleich verschiedener Stichproben
+Nachteil: Eignet sich nur für Variablen, bei denen die Standardabweichung sinnvoll interpretiert werden kann und nicht für den Vergleich verschiedener Stichproben
 
 ```{r}
 summary(naive_model)
@@ -35,11 +36,10 @@ summary(stand_model)
 ```
 
 ```{r}
-stand_model <- lm(data=train_processed, scale(SalePrice) ~ 0 + scale(LotArea) + scale(YearRemodAdd) + scale(YearsSinceSale) + scale(MasVnrArea) + scale(BsmtFinSF2) + scale(BsmtUnfSF) + scale(LowQualFinSF) + scale(GrLivArea) + scale(BsmtFullBath) + scale(BsmtHalfBath) + scale(FullBath) + scale(HalfBath) + scale(Bedroom) + scale(Kitchen) + scale(TotRmsAbvGrd) + scale(Fireplaces) + scale(GarageYrBlt) + scale(GarageCars) + scale(GarageArea) + scale(WoodDeckSF) + scale(OpenPorchSF) + scale(EnclosedPorch) + scale(ScreenPorch) + scale(PoolArea) + scale(MiscVal) + scale(MoSold) + scale(YrSold))
+stand_model <- lm(data=train_processed, scale(SalePrice) ~ 0 + scale(LotArea) + scale(YearRemodAdd) + scale(MasVnrArea) + scale(X1stFlrSF) + scale(X2ndFlrSF) + scale(LowQualFinSF) + scale(GrLivArea) + scale(GarageArea) + scale(WoodDeckSF) + scale(OpenPorchSF) + scale(ScreenPorch) + scale(OverallQual) + scale(OverallCond) + scale(TotRmsAbvGrd))
 
 summary(stand_model)
 ```
-
 
 
 

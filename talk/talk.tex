@@ -30,7 +30,7 @@
 
 \title{Vorhersage und Interpretation des\\Verkaufpreises von Immobilien\\mittels linearer Regression}
 \date{}
-\author{Karin NachnameNichtVergessen, Phillip Grafendorfer, Martin Hufrat, Raphael Peer}
+\author{Karin Lassnig, Phillip Grafendorfer, Martin Huf, Raphael Peer}
 
 
 
@@ -80,6 +80,7 @@
 
 \end{frame}
 
+
 \section{Modelle}
 
 \begin{frame}{Einfaches Model}
@@ -101,6 +102,66 @@
 	
 \end{frame}
 
+\section{Standardisierte Koeffizienten}
+
+\begin{frame}{Problemstellung}
+	
+	\begin{Large}{Nachteil unstandardisierter Regressionskoeffizienten}\end{Large}
+	
+	  \begin{itemize}
+		\item Von den Maßeinheiten für X und Y abhängig
+		\item Daher schlechtere Vergleichbarkeit
+	  \end{itemize}
+	 
+	\begin{Large}{Lösung: Standardisierte Koeffizienten}\end{Large}
+	  
+	
+\end{frame}
+
+
+\begin{frame}{Umsetzung}
+	
+	\begin{Large}{Abhängige und unabhängige Variablen werden standardisiert}\end{Large}
+	
+	\begin{itemize}
+		\item Mittelwert = 0
+		\item Varianz = 1
+	\end{itemize}
+	
+	\begin{Large}{Regressionskoeffizienten:}\end{Large}
+		\begin{itemize}
+     	       \item $\hat{\beta_i} = \beta_i*\frac{s_{x_i}}{s_y}$
+     	       \item $\hat{\beta_i}$ sollte im Intervall [-1, 1] liegen (sonst Hinweis auf Multikollinearität )
+		\end{itemize}
+	
+\end{frame}
+
+
+
+\begin{frame}{Vor- und Nachteile}
+	
+	\begin{Large}{Vorteile}\end{Large}
+	
+	\begin{itemize}
+		\item Operiert mit Änderungen von Standardabweichungen
+		\item $\Rightarrow$ Stärke und Richtung eines Effektes können besser interpretiert und verglichen werden
+	\end{itemize}
+	
+	\begin{Large}{Nachteile}\end{Large}
+	
+	  \begin{itemize}
+		\item Nur für Variablen anwendbar, bei denen Heranziehen einer Standardabweichung sinnvoll ist (zB nicht Dummyvariablen)
+		\item Abhängigkeit von Stichprobe
+		\item Kann zu Missverständnissen führen
+	  \end{itemize}
+	
+\end{frame}
+
+\begin{frame}{Anwendung}
+	
+	....
+	
+\end{frame}	
 
 \begin{frame}{Fragen und Diskussion}
 	\begin{LARGE}
