@@ -1,0 +1,58 @@
+---
+title: "split train-validation"
+output: html_document
+---
+
+Make a design-matrix and split afterwards into training and validation set.
+
+Advantage: handles rare factor level problem.
+
+```{r}
+train <- read.csv('../data/train.csv')
+test <- read.csv('../data/test.csv')
+```
+
+```{r}
+source('pre_process.R')
+na_statsistics <- get_na_stats(train_df=train, test_df=test)
+processed <- train %>% 
+  impute_na(na_stats=na_statsistics) %>%  
+  feature_engineer()
+```
+
+
+```{r}
+df_train <- data.table(processed, keep.rownames = F)
+sparse_matrix <- sparse.model.matrix(SalePrice ~ . -1 , data = df_train)
+
+process_output_data <- function(data_table){
+  output_vector_train <- data_table[,SalePrice]
+  output_vector_train <- output_vector_train %>% 
+    scale(center = TRUE, scale = FALSE) %>% 
+    as.matrix()
+  return(output_vector_train)
+}
+output_vector <- process_output_data(df_train)
+```
+
+
+```{r}
+val_fraction = 0.2
+val_sample_size = val_fraction * nrow(sparse_matrix)
+val_indices = sample(1:nrow(sparse_matrix), size=val_sample_size)
+
+val_X <- sparse_matrix[val_indices, ]
+val_y <- output_vector[val_indices]
+train_X <- sparse_matrix[-val_indices, ]
+train_y <- output_vector[-val_indices]
+
+saveRDS(val_X, file='val_X.RDS')
+saveRDS(val_y, file='val_y.RDS')
+saveRDS(train_X, file='train_X.RDS')
+saveRDS(train_y, file='train_y.RDS')
+```
+
+
+
+
+
