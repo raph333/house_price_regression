@@ -1,3 +1,5 @@
 \beamer@endinputifotherversion {3.36pt}
 \beamer@sectionintoc {1}{Daten}{2}{0}{1}
-\beamer@sectionintoc {2}{Modelle}{7}{0}{2}
+\beamer@sectionintoc {2}{Modelle}{6}{0}{2}
+\beamer@sectionintoc {3}{Standardisierte Koeffizienten}{8}{0}{3}
+\beamer@sectionintoc {4}{Regularisierung}{11}{0}{4}
