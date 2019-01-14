@@ -7,28 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-```{r}
-# train <- readRDS(file = "data/train_preprocessed.rds")
-# validation <- readRDS(file = "data/validation_preprocessed.rds")
-train <- read.csv('../data/train.csv')
-test <- read.csv('../data/test.csv')
-```
-
-```{r}
-source('pre_process.R')
-na_statsistics <- get_na_stats(train_df=train, test_df=test)
-train_processed <- train %>% 
-  impute_na(na_stats=na_statsistics) %>%  
-  feature_engineer()
-split_data <- split_training_validation_ds(train_processed, validation_fraction=0.2)
-train <- split_data[[1]]
-val <- split_data[[2]]
-```
-
-
-```{r}
 set.seed(42)
 library(glmnet)
 library(psych)
@@ -38,13 +17,31 @@ library(data.table)
 ```
 
 ```{r}
+train <- readRDS(file = "../data/train_preprocessed.rds")
+validation <- readRDS(file = "../data/validation_preprocessed.rds")
+# train <- read.csv('../data/train.csv')
+# test <- read.csv('../data/test.csv')
+```
+
+```{r}
+# source('pre_process.R')
+# na_statsistics <- get_na_stats(train_df=train, test_df=test)
+# train_processed <- train %>% 
+#   impute_na(na_stats=na_statsistics) %>%  
+#   feature_engineer()
+# split_data <- split_training_validation_ds(train_processed, validation_fraction=0.2)
+# train <- split_data[[1]]
+# val <- split_data[[2]]
+```
+
+```{r}
 df_train <- data.table(train, keep.rownames = F)
 sparse_matrix_train <- sparse.model.matrix(SalePrice ~ . -1 , data = df_train)
 
 process_output_data <- function(data_table){
   output_vector_train <- data_table[,SalePrice]
   output_vector_train <- output_vector_train %>% 
-    scale(center = TRUE, scale = FALSE) %>% 
+    scale(center = TRUE, scale = F) %>% 
     as.matrix()
   return(output_vector_train)
 }
@@ -86,7 +83,7 @@ boxplot(df_coeff$coefficient, horizontal = T)
 ```
 
 ```{r}
-df_val <- data.table(val, keep.rownames = F)
+df_val <- data.table(validation, keep.rownames = F)
 sparse_matrix_val <- sparse.model.matrix(SalePrice ~ . -1 , data = df_val)
 
 output_vector_val <- process_output_data(df_val)
