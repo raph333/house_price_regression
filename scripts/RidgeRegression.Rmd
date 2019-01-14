@@ -12,8 +12,6 @@ set.seed(42)
 library(glmnet)
 library(psych)
 library(dplyr)
-library(purrr)
-library(data.table)
 ```
 
 Lade Daten
@@ -30,6 +28,7 @@ train_y <- train_y %>% scale(center = T, scale = F)
 val_y <- val_y %>% scale(center = T, scale = F)
 ```
 
+## Ridge Regression
 Crossvalidierung von Lambda
 ```{r}
 lambdas_to_try <- 10^seq(2, 8, length.out = 100)
@@ -48,6 +47,7 @@ model_cv <- glmnet(train_X, train_y, alpha = 0, lambda = lambda_cv, standardize 
 y_hat_cv <- predict(model_cv, train_X)
 ssr_cv <- t(train_y - y_hat_cv) %*% (train_y - y_hat_cv)
 rsq_ridge_cv <- cor(train_y, y_hat_cv)^2
+print(rsq_ridge_cv)
 ```
 
 Koeffizienten
@@ -65,6 +65,44 @@ mad <- mean(abs(prediction - val_y))
 print(mad)
 ```
 
+## Betrachte das gesamte Modell train+val
+```{r}
+all_X <- rbind(train_X, val_X)
+all_y <- rbind(train_y, val_y)
+```
 
+```{r}
+lambdas_to_try <- 10^seq(2, 8, length.out = 100)
+# Setting alpha = 0 implements ridge regression
+ridge_cv <- cv.glmnet(all_X, all_y, alpha = 0, lambda = lambdas_to_try, standardize = TRUE, nfolds = 10)
+```
 
+```{r}
+# Best cross-validated lambda
+lambda_cv <- ridge_cv$lambda.min
+# Fit final model, get its sum of squared residuals and multiple R-squared
+model_cv <- glmnet(all_X, all_y, alpha = 0, lambda = lambda_cv, standardize = TRUE)
+y_hat_cv <- predict(model_cv, all_X)
+ssr_cv <- t(all_y - y_hat_cv) %*% (all_y - y_hat_cv)
+mad_cv <- mean(abs(y_hat_cv - all_y))
+rsq_ridge_cv <- cor(all_y, y_hat_cv)^2
+print(rsq_ridge_cv)
+```
 
+## Versuch Beta Koeffizienten
+```{r}
+# Best cross-validated lambda
+lambda_cv <- 0
+# Fit final model, get its sum of squared residuals and multiple R-squared
+model_cv <- glmnet(train_X, train_y, alpha = 0, lambda = lambda_cv, standardize = TRUE)
+y_hat_cv <- predict(model_cv, train_X)
+ssr_cv <- t(train_y - y_hat_cv) %*% (train_y - y_hat_cv)
+rsq_ridge_cv <- cor(train_y, y_hat_cv)^2
+print(rsq_ridge_cv)
+```
+
+```{r}
+prediction <- predict(model_cv, val_X)
+mad <- mean(abs(prediction - val_y))
+print(mad)
+```
