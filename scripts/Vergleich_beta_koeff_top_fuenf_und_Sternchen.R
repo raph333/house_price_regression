@@ -9,7 +9,9 @@ library(jtools)
 
 # *** aus Karins letztem Modell
 
-lm_9 <- lm(formula=scale(SalePrice)~0+scale(OverallQual)+scale(X1stFlrSF)+scale(X2ndFlrSF)+
+train_processed <- read.csv("data/train.csv")
+
+lm_9 <- lm(formula=SalePrice~0+scale(OverallQual)+scale(X1stFlrSF)+scale(X2ndFlrSF)+
              scale(GarageArea)+scale(YearRemodAdd)+scale(MasVnrArea)+scale(LotArea)+ scale(WoodDeckSF)+
              scale(ScreenPorch),data=train_processed)
 summary(lm_9)
@@ -35,7 +37,7 @@ resettest(lm_9)
 ######
 
 
-t_selection <- select(train, ScreenPorch,WoodDeckSF,LotArea,MasVnrArea,YearRemodAdd,GarageArea,X2ndFlrSF,X1stFlrSF,OverallQual)
+t_selection <- select(train_processed, ScreenPorch,WoodDeckSF,LotArea,MasVnrArea,YearRemodAdd,GarageArea,X2ndFlrSF,X1stFlrSF,OverallQual)
 t_cor <- select(train,SalePrice)
 prediction_top9 <- predict(lm_9, newdata=t_selection)
 mean9<- mean(abs(prediction_top9 - t_cor$SalePrice))
