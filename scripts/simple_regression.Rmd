@@ -20,6 +20,20 @@ val_y <- readRDS("../data/non_standardized/val_y.RDS")
 
 
 ```{r}
+require(SparseM)
+simple_model <- slm(train_y ~ train_X)
+  
+```
+
+
+```{r}
+beta_hat <- solve(t(train_X) %*% train_X) %*% t(train_X) %*% train_y
+
+predictions <- t(val_X)
+```
+
+
+```{r}
 simple_model <- glmnet(train_X, train_y, lambda=0, standardize=F)
 prediction <- predict(simple_model, val_X)
 
