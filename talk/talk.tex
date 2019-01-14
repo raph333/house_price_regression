@@ -121,7 +121,7 @@
 
 \section{Regularisierung}
 
-\begin{frame}{Problemstellung}
+\begin{frame}{Problemstellung I}
         \begin{figure}
             \centering
                 \includegraphics[width=0.5\textwidth, keepaspectratio]{figures/bias-and-variance.jpg}
@@ -135,7 +135,20 @@
     
 \end{frame}
 
-\begin{frame}{Lösung}
+\begin{frame}{Problemstellung II}
+        
+        \begin{Large}{Wann tritt große Varianz auf?}\end{Large}
+        
+        \begin{itemize}
+            \item Wenn die Predictoren hohe Korrelation aufweisen
+            \item Bei vielen Prediktoren. Wenn #Prediktoren nahe bei Anzahl der Beobachtungen geht die Varianz gegen unendlich.
+        \end{itemize}
+    
+\end{frame}
+
+\begin{frame}{Lösung I}
+
+    \begin{Large}{Verringerung der Varianz auf Kosten des Bias}\end{Large}
 
         \begin{figure}
             \centering
@@ -143,10 +156,24 @@
             \caption{Quelle: researchgate.net}
         \end{figure}
         
+\end{frame}
+
+\begin{frame}{Lösung II}
+
+    \begin{equation*}
+        L_{ridge}(\hat{\beta})=\sum_{i=1}^{n}(y_{i}-x_{i}'\hat{\beta})^2+\lambda\sum_{j=1}^{m}\hat{\beta}_{j}^2=||y-X\hat{\beta}||^2+\lambda||\hat{\beta}||^2
+    \end{equation*}
+    Die Diskussion dieser Likelihood Funktion liefert für jeden Parameter $\lambda$ ein set von Schätzern $\hat{\beta}$.
+    Falls $\lambda \Rightarrow 0$, dann $\hat{\beta}_{ridge} \Rightarrow \hat{\beta}_{OLS}$
+    Frage: wie wird der Regularisierungs- Parameter gewählt?
+    \begin{itemize}
+        \item Crossvalidierung (hier benutzt)
+        \item Minimierung eines weiteren Informationskriteriums (AIC, BCI etc.)
+    \end{itemize}
     
 \end{frame}
 
-\begin{frame}{Hyper Parameter}
+\begin{frame}{Crossvalidierung}
 
     \begin{figure}
         \centering
@@ -156,11 +183,6 @@
     
 \end{frame}
 
-\begin{frame}{Resultat}
-
-    
-    
-\end{frame}
 
 
 \begin{frame}{Umsetzung}
@@ -207,7 +229,6 @@
 		\includegraphics[width=\textwidth, keepaspectratio]{figures/Stand_M}
 	\end{figure}
 
-	
 \end{frame}	
 
 \begin{frame}{Fragen und Diskussion}
