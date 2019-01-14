@@ -119,6 +119,15 @@
 	
 \end{frame}
 
+\begin{frame}{Beta-Koeffizienten im Vergleich}
+	
+	\begin{figure}
+		\includegraphics[width=\textwidth, keepaspectratio]{figures/beta_koeffizienten}
+	\end{figure}
+
+\end{frame}
+
+
 \section{Regularisierung}
 
 \begin{frame}{Problemstellung I}
@@ -228,6 +237,26 @@
 	\end{figure}
 
 \end{frame}	
+
+
+\begin{frame}{Vergleich der Modelle}
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlll}
+  \hline
+ & Modelle & R$^2$ & MAD \\ 
+  \hline
+ & Top5 & 0.762 & 25410 \\ 
+   & Top9 & 0.779 & 24407 \\ 
+   & Naives Modell & 0.933 & 20117 \\ 
+   & RReg (Vset) & 0.903 & 19624 \\ 
+   & RReg (Ges) & 0.896 &  \\ 
+   & RReg (Spez) & 0.952 & 23251 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+\end{frame}
 
 \begin{frame}{Fragen und Diskussion}
 	\begin{LARGE}
