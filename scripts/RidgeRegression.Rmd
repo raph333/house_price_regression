@@ -22,6 +22,19 @@ val_X <- readRDS("../data/val_X.RDS")
 val_y <- readRDS("../data/val_y.RDS")
 ```
 
+## Eval LM ohne Standardisierung
+```{r}
+lin_fit <- glmnet(train_X, train_y, alpha = 0, lambda = 0, standardize = F)
+```
+
+```{r}
+lin_prediction <- predict(lin_fit, val_X)
+mad <- mean(abs(lin_prediction - val_y))
+print(mad)
+```
+
+
+
 Normiere den output
 ```{r}
 train_y <- train_y %>% scale(center = T, scale = F)
