@@ -47,12 +47,18 @@
 
 \begin{frame}{Ames House price Dataset}
 	
-	Datensatz...
+	\begin{Large}
+		Datensatz:
+	\end{Large}
+	\begin{itemize}
+		\item 1460 Häuser
+		\item 79 erklärende Variablen (numerisch und kategorisch)
+		\item bekannter Übungsdatensatz
+	\end{itemize}
 	
-	\begin{tiny}		
-		Quelle:\\
-		\url{https://www.kaggle.com/c/house-prices-advanced-regression-techniques}
-	\end{tiny}
+	\begin{Tiny}		
+		Quelle: \url{https://www.kaggle.com/c/house-prices-advanced-regression-techniques}
+	\end{Tiny}
 \end{frame}
 
 
@@ -76,26 +82,9 @@
 \end{frame}
 
 
-\begin{frame}{...}
-	
-
-\end{frame}
-
-
 \section{Modelle}
 
-\begin{frame}{Einfaches Model}
-	
-	\begin{Large}{Eckdaten}\end{Large}
-	\begin{itemize}
-		\item 73 erklärende Variablen
-		\item keine manuelle Auswahl der Variablen
-		\item Mean absolute deviation: $\approx 15 000 \$$
-	\end{itemize}
-	
-\end{frame}
-
-\begin{frame}{Einfaches Model}
+\begin{frame}{Einfaches Model mit allen Variablen}
 	
 	\begin{figure}
 		\includegraphics[width=\textwidth, keepaspectratio]{figures/simple_model}
@@ -118,6 +107,15 @@
 	  
 	
 \end{frame}
+
+\begin{frame}{Beta-Koeffizienten im Vergleich}
+	
+	\begin{figure}
+		\includegraphics[width=\textwidth, keepaspectratio]{figures/beta_koeffizienten}
+	\end{figure}
+
+\end{frame}
+
 
 \section{Regularisierung}
 
@@ -229,10 +227,30 @@
 
 \end{frame}	
 
+
+\begin{frame}{Vergleich der Modelle}
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlll}
+  \hline
+ & Modelle & R$^2$ & MAD \\ 
+  \hline
+ & Top5 & 0.762 & 25410 \\ 
+   & Top9 & 0.779 & 24407 \\ 
+   & Naives Modell & 0.933 & 20117 \\ 
+   & RReg (Vset) & 0.903 & 19624 \\ 
+   & RReg (Ges) & 0.896 &  \\ 
+   & RReg (Spez) & 0.952 & 23251 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+\end{frame}
+
 \begin{frame}{Fragen und Diskussion}
 	\begin{LARGE}
 		\begin{center}
-			Vielen Dank für Ihre Aufmerksamkeit
+			Vielen Dank für\\Ihre Aufmerksamkeit!
 		\end{center}
 	\end{LARGE}
 \end{frame}

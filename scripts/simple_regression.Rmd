@@ -1,0 +1,64 @@
+---
+title: "simple_regression"
+output: html_document
+---
+
+```{r, message=F, comment=NA}
+require(dplyr)
+require(ggplot2)
+require(tidyr)
+require(scales)
+```
+
+Lade Daten
+```{r}
+train_X <- readRDS("../data/non_standardized/train_X.RDS")
+train_y <- readRDS("../data/non_standardized/train_y.RDS")
+val_X <- readRDS("../data/non_standardized/val_X.RDS")
+val_y <- readRDS("../data/non_standardized/val_y.RDS")
+```
+
+
+```{r}
+require(SparseM)
+simple_model <- slm(train_y ~ train_X)
+  
+```
+
+
+```{r}
+beta_hat <- solve(t(train_X) %*% train_X) %*% t(train_X) %*% train_y
+
+predictions <- t(val_X)
+```
+
+
+```{r}
+simple_model <- glmnet(train_X, train_y, lambda=0, standardize=F)
+prediction <- predict(simple_model, val_X)
+
+mad <- mean(abs(prediction - val_y))
+cat('MAD (mean absolute deviation: ', mad)
+```
+
+```{r}
+y_hat <- predict(simple_model, train_X)
+R2 <- cor(train_y, y_hat)^2
+cat('R-squared: ', R2)
+```
+
+
+```{r}
+df=data.frame(SalePrice=val_y, prediction=prediction)
+
+ggplot(df, aes(x=SalePrice, y=prediction) ) +
+  geom_point() +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma) +
+  ylab('Vorhersage [$]') +
+  xlab('Verkaufspreis [$]') +
+  ggtitle('Modell-Vorhersage und Verkaufspreis') + 
+  theme(plot.title=element_text(size=16, hjust=0.5))
+ggsave('../talk/figures/simple_model.pdf')
+```
+
