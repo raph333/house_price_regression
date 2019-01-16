@@ -1,0 +1,89 @@
+---
+title: "Heteroskedastic Ridge Regression"
+author: "Philipp Grafendorfer"
+date: "16 Januar 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(42)
+library(glmnet)
+library(psych)
+library(dplyr)
+library(tibble)
+```
+
+Lade Daten
+```{r}
+X_train <- readRDS("../data/train_X.RDS")
+y_train <- readRDS("../data/train_y.RDS")
+X_val <- readRDS("../data/val_X.RDS")
+y_val <- readRDS("../data/val_y.RDS")
+```
+
+```{r}
+# check if there is a column with var=0; eliminate that variable from train and val set
+nzv <- caret::nearZeroVar(X_train, saveMetrics= TRUE)
+zv_names <- nzv %>% 
+  rownames_to_column('var') %>% 
+  filter(zeroVar==T) %>% 
+  .$var
+
+dim_names <- X_train@Dimnames[[2]]
+non_zv_names <- base::setdiff(dim_names, zv_names)
+X_train <- X_train[,non_zv_names]
+X_val <- X_train[,non_zv_names]
+```
+
+
+```{r}
+# Calculate the weights from univariate regressions
+weights <- sapply(seq(ncol(X_train)), function(predictor) {
+  uni_model <- lm(y_train ~ X_train[, predictor])
+  coeff_variance <- summary(uni_model)$coefficients[2, 2]^2
+})
+```
+
+```{r}
+hridge_loss <- function(betas) {
+  sum((y_train - X_train %*% betas)^2) + lambda * sum(weights * betas^2)
+}
+```
+
+```{r}
+# Heteroskedastic Ridge Regression function
+hridge <- function(X, y, .lambda, weights) {
+  # Use regular ridge regression coefficient as initial values for optimization
+  model_init <- glmnet(X, y, alpha = 0, lambda = .lambda, standardize = FALSE)
+  betas_init <- as.vector(model_init$beta)
+  # Solve optimization problem to get coefficients
+  coef <- optim(betas_init, hridge_loss)$par
+  # Compute fitted values and multiple R-squared
+  fitted <- X %*% coef
+  rsq <- cor(y, as.vector(fitted))^2
+  names(coef) <- dimnames(X)[[2]]
+  output <- list("coef" = coef,
+                 "fitted" = fitted,
+                 "rsq" = rsq)
+  return(output)
+}
+```
+
+```{r}
+# Fit model to the data for lambda = 0.001
+lambda <- 0.001
+hridge_model <- hridge(X_train, y_train, .lambda = 0.001, weights = weights)
+rsq_hridge_0001 <- hridge_model$rsq
+```
+
+```{r}
+model_init <- glmnet(X_train, y_train, alpha = 0, lambda = 0.001, standardize = FALSE)
+betas_init <- as.vector(model_init$beta)
+coef <- optim(betas_init, hridge_loss)$par
+fitted <- X_train %*% coef
+rsq <- cor(y_train, as.vector(fitted))^2
+```
+
+

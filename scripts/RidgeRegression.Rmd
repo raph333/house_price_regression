@@ -33,8 +33,6 @@ mad <- mean(abs(lin_prediction - val_y))
 print(mad)
 ```
 
-
-
 Normiere den output
 ```{r}
 train_y <- train_y %>% scale(center = T, scale = F)
