@@ -35,7 +35,7 @@ zv_names <- nzv %>%
 dim_names <- X_train@Dimnames[[2]]
 non_zv_names <- base::setdiff(dim_names, zv_names)
 X_train <- X_train[,non_zv_names]
-X_val <- X_train[,non_zv_names]
+X_val <- X_val[,non_zv_names]
 ```
 
 ```{r}
@@ -80,7 +80,8 @@ hridge_model <- hridge(X_train, y_train, lambda = lambda, weights = weights)
 rsq_hridge_0001 <- hridge_model$rsq
 print(rsq_hridge_0001)
 prediction <- X_val %*% hridge_model$coef
-mad <- mean(abs(y_val - prediction))
+mad <- mean(abs(as.vector(y_val) - prediction))
+print(mad)
 ```
 
 ```{r}

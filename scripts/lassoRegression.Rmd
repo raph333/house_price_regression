@@ -1,0 +1,68 @@
+---
+title: "Lasso Regression"
+author: "Philipp Grafendorfer"
+date: "17 Januar 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(42)
+library(glmnet)
+library(psych)
+library(dplyr)
+library(tibble)
+library(caret)
+```
+
+Lade Daten
+```{r}
+X_train <- readRDS("../data/train_X.RDS")
+y_train <- readRDS("../data/train_y.RDS")
+X_val <- readRDS("../data/val_X.RDS")
+y_val <- readRDS("../data/val_y.RDS")
+```
+
+Normiere den output
+```{r}
+y_train <- y_train %>% scale(center = T, scale = F)
+y_val <- y_val %>% scale(center = T, scale = F)
+```
+
+## Ridge Regression
+Crossvalidierung von Lambda
+```{r}
+lambdas_to_try <- 10^seq(2, 8, length.out = 100)
+# Setting alpha = 0 implements ridge regression
+lasso_cv <- cv.glmnet(X_train, y_train, alpha = 1, lambda = lambdas_to_try, standardize = TRUE, nfolds = 10)
+# Plot cross-validation results
+plot(ridge_cv)
+```
+
+```{r}
+# Best cross-validated lambda
+lambda_cv <- lasso_cv$lambda.min
+# Fit final model, get its sum of squared residuals and multiple R-squared
+model_cv <- glmnet(X_train, y_train, alpha = 1, lambda = lambda_cv, standardize = TRUE)
+y_hat_cv <- predict(model_cv, X_train)
+ssr_cv <- t(y_train - y_hat_cv) %*% (y_train - y_hat_cv)
+rsq_lasso_cv <- cor(y_train, y_hat_cv)^2
+
+
+# See how increasing lambda shrinks the coefficients --------------------------
+# Each line shows coefficients for one variables, for different lambdas.
+# The higher the lambda, the more the coefficients are shrinked towards zero.
+res <- glmnet(X_train, y_train, alpha = 1, lambda = lambdas_to_try, standardize = FALSE)
+plot(res, xvar = "lambda")
+legend("bottomright", lwd = 1, col = 1:6, legend = colnames(X_train), cex = .7)
+```
+
+```{r}
+prediction <- predict(res, X_val)
+mad <- mean(abs(prediction - as.vector(y_val)))
+```
+
+
+
+
