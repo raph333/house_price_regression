@@ -167,7 +167,7 @@
     
 \end{frame}
 
-\begin{frame}{Lösung I}
+\begin{frame}{Lösung}
 
     \begin{Large}{Verringerung der Varianz auf Kosten des Bias}\end{Large}
 
@@ -179,8 +179,8 @@
         
 \end{frame}
 
-\begin{frame}{Lösung II}
-
+\begin{frame}{Ridge Regression}
+	
     \begin{equation*}
         L_{ridge}(\hat{\beta})=\sum_{i=1}^{n}(y_{i}-x_{i}'\hat{\beta})^2+\lambda\sum_{j=1}^{m}\hat{\beta}_{j}^2=||y-X\hat{\beta}||^2+\lambda||\hat{\beta}||^2
     \end{equation*}
@@ -194,7 +194,7 @@
     
 \end{frame}
 
-\begin{frame}{Crossvalidierung}
+\begin{frame}{Ridge Regression: Crossvalidierung}
 
     \begin{figure}
         \centering
@@ -204,41 +204,39 @@
     
 \end{frame}
 
-
-
-\begin{frame}{Umsetzung}
+\begin{frame}{Lasso Regression}
 	
-	\begin{Large}{Abhängige und unabhängige Variablen werden standardisiert}\end{Large}
-	
+	\begin{equation*}
+	L_{lasso}(\hat{\beta})=\sum_{i=1}^{n}(y_{i}-x_{i}'\hat{\beta})^2+\lambda\sum_{j=1}^{m}|\hat{\beta}_{j}|=||y-X\hat{\beta}||^2+\lambda||\hat{\beta}||
+	\end{equation*}
+	Die Diskussion dieser Likelihood Funktion liefert für jeden Parameter $\lambda$ ein set von Schätzern $\hat{\beta}$.
+	Falls $\lambda \Rightarrow 0$, dann $\hat{\beta}_{lasso} \Rightarrow \hat{\beta}_{OLS}$
+	Frage: wie wird der Regularisierungs- Parameter gewählt?
 	\begin{itemize}
-		\item Mittelwert = 0
-		\item Varianz = 1
+		\item Crossvalidierung (hier benutzt)
+		\item Minimierung eines weiteren Informationskriteriums (AIC, BCI etc.)
 	\end{itemize}
-	
-	\begin{Large}{Regressionskoeffizienten:}\end{Large}
-		\begin{itemize}
-     	       \item $\hat{\beta_i} = \beta_i*\frac{s_{x_i}}{s_y}$
-     	       \item $\hat{\beta_i}$ sollte im Intervall [-1, 1] liegen (sonst Hinweis auf Multikollinearität )
-		\end{itemize}
 	
 \end{frame}
 
-\begin{frame}{Vor- und Nachteile}
+\begin{frame}{Lasso Regression: Crossvalidierung}
 	
-	\begin{Large}{Vorteile}\end{Large}
+	\begin{figure}
+		\centering
+		\includegraphics[height=.7\textheight]{figures/lasso_cv.pdf}
+		\caption{Lambda Tuning}
+	\end{figure}
 	
-	\begin{itemize}
-		\item Operiert mit Änderungen von Standardabweichungen
-		\item $\Rightarrow$ Stärke und Richtung eines Effektes können besser interpretiert und verglichen werden
-	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Lasso Regression: Koeffizienten}
 	
-	\begin{Large}{Nachteile}\end{Large}
-	
-	  \begin{itemize}
-		\item Nur für Variablen anwendbar, bei denen Heranziehen einer Standardabweichung sinnvoll ist (zB nicht Dummyvariablen)
-		\item Abhängigkeit von Stichprobe
-		\item Kann zu Missverständnissen führen
-	  \end{itemize}
+	\begin{figure}
+		\centering
+		\includegraphics[height=.7\textheight]{figures/lasso_coeff.pdf}
+		\caption{Lambda Tuning}
+	\end{figure}
 	
 \end{frame}
 
@@ -251,12 +249,9 @@
   \hline
  & Modelle & R$^2$ & MAD \\ 
   \hline
- & Top5 & 0.762 & 25410 \\ 
-   & Top9 & 0.779 & 24407 \\ 
-   & Naives Modell & 0.933 & 20117 \\ 
-   & RReg (Vset) & 0.903 & 19624 \\ 
-   & RReg (Ges) & 0.896 &  \\ 
-   & RReg (Spez) & 0.952 & 23251 \\ 
+   & OLS & 0.933 & 20117 \\ 
+   & Ridge & 0.903 & 19624 \\ 
+   & Lasso & 0.904 & 30010\\ 
    \hline
 \end{tabular}
 \end{table}
@@ -266,7 +261,7 @@
 \begin{frame}{Fragen und Diskussion}
 	\begin{LARGE}
 		\begin{center}
-			Vielen Dank für\\Ihre Aufmerksamkeit!
+			Vielen Dank für\\eure Aufmerksamkeit!
 		\end{center}
 	\end{LARGE}
 \end{frame}
