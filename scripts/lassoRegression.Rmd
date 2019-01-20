@@ -37,7 +37,7 @@ lambdas_to_try <- 10^seq(2, 8, length.out = 100)
 # Setting alpha = 0 implements ridge regression
 lasso_cv <- cv.glmnet(X_train, y_train, alpha = 1, lambda = lambdas_to_try, standardize = TRUE, nfolds = 10)
 # Plot cross-validation results
-plot(ridge_cv)
+plot(lasso_cv)
 ```
 
 ```{r}
