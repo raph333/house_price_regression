@@ -31,7 +31,7 @@
 
 \title{Regularisierung von linearer Regression}
 \date{}
-\author{Phillip Grafendorfer, Michael Kastner, Raphael Peer}
+\author{Philipp Grafendorfer, Michael Kastner, Raphael Peer}
 
 
 
@@ -184,12 +184,12 @@
     \begin{equation*}
         L_{ridge}(\hat{\beta})=\sum_{i=1}^{n}(y_{i}-x_{i}'\hat{\beta})^2+\lambda\sum_{j=1}^{m}\hat{\beta}_{j}^2=||y-X\hat{\beta}||^2+\lambda||\hat{\beta}||^2
     \end{equation*}
-    Die Diskussion dieser Likelihood Funktion liefert für jeden Parameter $\lambda$ ein set von Schätzern $\hat{\beta}$.
+    Man erhält für jeden Parameter $\lambda$ ein set von Schätzern $\hat{\beta}$.
     Falls $\lambda \Rightarrow 0$, dann $\hat{\beta}_{ridge} \Rightarrow \hat{\beta}_{OLS}$
     Frage: wie wird der Regularisierungs- Parameter gewählt?
     \begin{itemize}
-        \item Crossvalidierung (hier benutzt)
-        \item Minimierung eines weiteren Informationskriteriums (AIC, BCI etc.)
+        \item Crossvalidierung (hier)
+        \item Minimierung eines weiteren Informationskriteriums (AIC, BIC etc.)
     \end{itemize}
     
 \end{frame}
@@ -205,15 +205,19 @@
 \end{frame}
 
 \begin{frame}{Lasso Regression}
+
+    \begin{Large}{Lasso, or Least Absolute Shrinkage and Selection Operator}\end{Large}
+    
+    Ridge: L2 Penalty
+    \newline
+    Lasso: L1 Penalty
 	
 	\begin{equation*}
-	L_{lasso}(\hat{\beta})=\sum_{i=1}^{n}(y_{i}-x_{i}'\hat{\beta})^2+\lambda\sum_{j=1}^{m}|\hat{\beta}_{j}|=||y-X\hat{\beta}||^2+\lambda||\hat{\beta}||
+	L_{lasso}(\hat{\beta})=\sum_{i=1}^{n}(y_{i}-x_{i}'\hat{\beta})^2+\lambda\sum_{j=1}^{m}|\hat{\beta}_{j}|=||y-X\hat{\beta}||^2+\lambda||\hat{\beta}||_{1}
 	\end{equation*}
-	Die Diskussion dieser Likelihood Funktion liefert für jeden Parameter $\lambda$ ein set von Schätzern $\hat{\beta}$.
-	Falls $\lambda \Rightarrow 0$, dann $\hat{\beta}_{lasso} \Rightarrow \hat{\beta}_{OLS}$
-	Frage: wie wird der Regularisierungs- Parameter gewählt?
+    Tuning:
 	\begin{itemize}
-		\item Crossvalidierung (hier benutzt)
+		\item Crossvalidierung (hier)
 		\item Minimierung eines weiteren Informationskriteriums (AIC, BCI etc.)
 	\end{itemize}
 	
@@ -256,6 +260,19 @@
 \end{tabular}
 \end{table}
 
+\end{frame}
+
+\begin{frame}{Anmerkungen}
+
+    \begin{itemize}
+        \item Feature Selection mit Lasso möglich, mit Ridge nicht.
+        \item Beide Methoden können gut mit Multikolinearität umgehen (Ridge: korrelierte Koeffizienten sind ähnlich groß, Lasso: ein Koeffizient groß, die von korrelierten Prediktoren sind nahe bei Null)
+    \end{itemize}
+    Verallgemeinerte Regularisierung linearer Modelle: Elastic Net
+    \begin{equation*}
+        L_{enet}(\hat{\beta})=\frac{\sum_{i=1}^{n}(y_i-x'_i\hat{\beta})^2}{2n}+\lambda(\frac{1-\alpha}{2}\sum_{j=1}^{m}\hat{\beta}_j^2+\alpha\sum_{j=1}^{m}|\hat{\beta}_j|)
+    \end{equation*}
+    
 \end{frame}
 
 \begin{frame}{Fragen und Diskussion}
